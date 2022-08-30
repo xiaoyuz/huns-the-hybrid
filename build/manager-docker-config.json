@@ -1,0 +1,8 @@
+{
+  "http_port": 8085,
+  "mysql_host": "manager-mysql",
+  "mysql_port": 3306,
+  "mysql_database": "blockchain_manager",
+  "mysql_user": "root",
+  "mysql_password": "2858300wc"
+}

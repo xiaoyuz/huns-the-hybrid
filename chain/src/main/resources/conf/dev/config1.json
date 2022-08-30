@@ -1,0 +1,11 @@
+{
+  "http_port": 38081,
+  "level_path": "/home/zhangxiaoyu/levelDB1",
+  "node_name": "node1",
+  "node_app_id": "node1app",
+
+  "tcp_port": 5001,
+
+  "manager_host": "localhost",
+  "manager_port": 8085
+}

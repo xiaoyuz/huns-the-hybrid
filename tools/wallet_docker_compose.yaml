@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+
+  huns-wallet-web:
+    image: 'huns-wallet:latest'
+    container_name: huns-wallet-web
+    restart: unless-stopped
+    ports:
+      - '8086:8086'
+    volumes:
+      - "/tmp/wallet-logs:/app/logs"

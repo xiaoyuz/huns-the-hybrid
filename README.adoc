@@ -1,0 +1,114 @@
+= Huns-the-hybrid
+
+image:https://img.shields.io/badge/vert.x-4.3.3-purple.svg[link="https://vertx.io"]
+
+This application was generated using http://start.vertx.io
+
+Huns-the-hybrid is a hybrid-chain developed with Vert.x. It might be a good playground for below:
+
+1. Kotlin
+
+2. Vert.x
+
+3. PBFT or other consensus algo (Such as Raft)
+
+4. P2P
+
+5. Distributed database/system
+
+== Building
+
+Maven:
+```
+./mvnw clean compile package
+```
+
+== Running
+
+To start mysql:
+```
+docker-compose -f blockmanager/tools/mysql_docker_compose.yaml up -d
+```
+
+Make images:
+```
+make manager-docker
+make huns-chain-docker
+make huns-wallet-docker
+```
+
+To start manager:
+```
+docker-compose -f tools/manager_docker_compose.yaml up -d
+```
+
+To start local dev 4 nodes:
+```
+docker-compose -f tools/chain_local_dev_docker_compose.yaml up -d
+```
+
+To start wallet web:
+```
+docker-compose -f tools/wallet_docker_compose.yaml up -d
+```
+
+Into container
+```
+docker exec -it ${cid} /bin/bash
+```
+
+== How to play
+
+Create a wallet with private/public key pair
+```
+curl --location --request GET 'http://localhost:8086/pairKey/random'
+```
+
+Sign a transaction with your key pair
+```
+curl --location --request POST 'http://localhost:8086/wallet/compute_tx' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "operation": 2,
+    "table": "message",
+    "json": "{}",
+    "oldJson": "{}",
+    "txId": "12",
+    "privateKey": "zAa6GhlG54d2CeU+CSxTVTGjrUaNlb2oUBFEj/xxxh8=",
+    "publicKey": "BFwcIqo0T713kMsqXcdYRHOeq0e4vCxCf1kAz6g8wzYEVpHEqhRjjx5Wn4Zl2A1FX5lWpVocaoRirx5oFSsZWJg="
+}'
+```
+
+Submit a signed transaction (whichever node, here use 38083 as example)
+```
+curl --location --request POST 'http://localhost:38083/transaction/submit' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"operation": 2,
+"table": "message",
+"json": "{}",
+"oldJson": "{}",
+"txId": "12",
+"sign": "MEQCIGHk2Q9AMt0riqoZgE+AT7adLzhODOCyqscVmiTJxTPtAiBawzUYSYjBavRguad7Q5ZPJxApYhgwViodYFao7iZnWw==",
+"publicKey": "BFwcIqo0T713kMsqXcdYRHOeq0e4vCxCf1kAz6g8wzYEVpHEqhRjjx5Wn4Zl2A1FX5lWpVocaoRirx5oFSsZWJg="
+}'
+```
+
+Wait for 30 ~ 90 seconds, a block will be created. Query latest block
+```
+curl --location --request GET 'http://localhost:38080/block/last'
+```
+
+Also can query a block by hash
+```
+curl --location --request GET 'http://localhost:38081/block/query?hash=2f759555d067900806d561b77d4470a1bdc28ada263c09244ea0a12fbe24bc45'
+```
+
+== Help
+
+* https://vertx.io/docs/[Vert.x Documentation]
+* https://stackoverflow.com/questions/tagged/vert.x?sort=newest&pageSize=15[Vert.x Stack Overflow]
+* https://groups.google.com/forum/?fromgroups#!forum/vertx[Vert.x User Group]
+* https://gitter.im/eclipse-vertx/vertx-users[Vert.x Gitter]
+
+

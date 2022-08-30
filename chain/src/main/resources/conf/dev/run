@@ -1,0 +1,5 @@
+java -jar target/chain-1.0.0-SNAPSHOT-fat.jar -conf src/main/resources/conf/dev/config0.json
+java -jar target/chain-1.0.0-SNAPSHOT-fat.jar -conf src/main/resources/conf/dev/config1.json
+java -jar target/chain-1.0.0-SNAPSHOT-fat.jar -conf src/main/resources/conf/dev/config2.json
+java -jar target/chain-1.0.0-SNAPSHOT-fat.jar -conf src/main/resources/conf/dev/config3.json
+java -jar target/chain-1.0.0-SNAPSHOT-fat.jar -conf src/main/resources/conf/dev/config4.json

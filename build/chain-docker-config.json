@@ -1,0 +1,11 @@
+{
+  "http_port": 38080,
+  "level_path": "/app/levelDB",
+  "node_name": "node0",
+  "node_app_id": "node0app",
+
+  "tcp_port": 5000,
+
+  "manager_host": "127.0.0.1",
+  "manager_port": 8085
+}
