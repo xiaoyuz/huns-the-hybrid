@@ -18,6 +18,8 @@ class MainVerticle : CoroutineVerticle() {
         val managerHost = envConfigJson.getString("MANAGER_HOST")
         val nodeName = envConfigJson.getString("NODE_NAME")
         val nodeAppId = envConfigJson.getString("NODE_APP_ID")
+        val nodePublicKey = envConfigJson.getString("NODE_PUBLIC_KEY")
+        val nodePrivateKey = envConfigJson.getString("NODE_PRIVATE_KEY")
 
         if (managerHost?.isEmpty() == false) {
             configJson.put("manager_host", managerHost)
@@ -27,6 +29,12 @@ class MainVerticle : CoroutineVerticle() {
         }
         if (nodeAppId?.isEmpty() == false) {
             configJson.put("node_app_id", nodeAppId)
+        }
+        if (nodePublicKey?.isEmpty() == false) {
+            configJson.put("node_public_key", nodePublicKey)
+        }
+        if (nodePrivateKey?.isEmpty() == false) {
+            configJson.put("node_private_key", nodePrivateKey)
         }
 
         deployVerticles(vertx, configJson)

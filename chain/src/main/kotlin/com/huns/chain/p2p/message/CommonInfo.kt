@@ -10,7 +10,7 @@ data class CommonInfo(
     var requestId: String = UUID(),
     var responseId: String = "",
     var nodeData: NodeData = NodeData(
-        appId = EnvConfig.nodeAppId,
+        appId = EnvConfig.nodePublicKey,
         ip = getIp(),
         port = EnvConfig.tcpPort
     )

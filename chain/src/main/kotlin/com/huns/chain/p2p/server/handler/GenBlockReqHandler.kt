@@ -24,7 +24,7 @@ class GenBlockReqHandler(vertx: Vertx) : BaseHandler<BlockMessage>(vertx) {
             block = block,
             voteType = VOTE_PREPREPARE,
             number = block.blockHeader.number,
-            appId = EnvConfig.nodeAppId,
+            appId = EnvConfig.nodePublicKey,
             hash = block.hash,
             agree = true
         )

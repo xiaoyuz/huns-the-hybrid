@@ -9,6 +9,8 @@ services:
       NODE_NAME: node0
       NODE_APP_ID: node0app
       MANAGER_HOST: 10.7.10.151
+      NODE_PUBLIC_KEY: "BLg2VxyZJj2tlfqSadTC1X1R2P31wc750WsWrTBDyuEjH1Tofm/PNruxdLBIG80SJOeUMM3rqRn5IN0g3MwTDYw="
+      NODE_PRIVATE_KEY: "mssvlEy8zey1FDnWicIacrZ/gdjGWU/1a5Vd2saKjI4="
     networks:
       bcn:
         ipv4_address: 192.170.0.2
@@ -26,6 +28,8 @@ services:
       NODE_NAME: node1
       NODE_APP_ID: node1app
       MANAGER_HOST: 10.7.10.151
+      NODE_PUBLIC_KEY: "BP5AwOvo6PGo3KH/g2pCbjh0xFWrVaDFaRs+gHfPi/Ztd5iRsChjIksdUVYul7Vg9W2j3Hi8DTSNxEygvwztz+M="
+      NODE_PRIVATE_KEY: "SZmuOGr1xoj+aX2fZ4CLFCfMOdwN2VvRhZh9SEl7noU="
     networks:
       bcn:
         ipv4_address: 192.170.0.3
@@ -43,6 +47,8 @@ services:
       NODE_NAME: node2
       NODE_APP_ID: node2app
       MANAGER_HOST: 10.7.10.151
+      NODE_PUBLIC_KEY: "BPutKJ16zR/ADfc47Zf3WPzK4F+SAdKsKy3sT2DlqP6cA6w1k/gdx97ZJpx3GA1i/0xppB1It9HyThjGqwOHXIw="
+      NODE_PRIVATE_KEY: "51d+DbwE1n9ap4z/RI9b2+BKEtCbIK1VtY09VqYtvug="
     networks:
       bcn:
         ipv4_address: 192.170.0.4
@@ -60,6 +66,8 @@ services:
       NODE_NAME: node3
       NODE_APP_ID: node3app
       MANAGER_HOST: 10.7.10.151
+      NODE_PUBLIC_KEY: "BMfTIw7JVuNE1gurrCHhcGtliq722wldZxCmI4ic8Lgd/CpdVvNaUpohyD0nhbH/4FBumSPeEoXHf/sSanxWXZw"
+      NODE_PRIVATE_KEY: "vLg58fQugEXZl3aoRItR0Llkyf8Egb309TLSRZZUGeU="
     networks:
       bcn:
         ipv4_address: 192.170.0.5

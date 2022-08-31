@@ -70,13 +70,6 @@ class P2PServer(
                 handlerMap[it.type]?.execute(it, socket)
             }
         }
-
-//        packetHelper.handleBuffer(buffer) {
-//            GlobalScope.launch(vertx.dispatcher()) {
-//                val p2pMessage = it.genP2PMessage()
-//                handlerMap[p2pMessage.type]?.execute(p2pMessage, socket)
-//            }
-//        }
     }
 
     private fun handleException(socket: NetSocket, t: Throwable) {

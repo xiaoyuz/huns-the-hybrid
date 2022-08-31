@@ -7,5 +7,8 @@
   "tcp_port": 5001,
 
   "manager_host": "localhost",
-  "manager_port": 8085
+  "manager_port": 8085,
+
+  "node_public_key": "BP5AwOvo6PGo3KH/g2pCbjh0xFWrVaDFaRs+gHfPi/Ztd5iRsChjIksdUVYul7Vg9W2j3Hi8DTSNxEygvwztz+M=",
+  "node_private_key": "SZmuOGr1xoj+aX2fZ4CLFCfMOdwN2VvRhZh9SEl7noU="
 }

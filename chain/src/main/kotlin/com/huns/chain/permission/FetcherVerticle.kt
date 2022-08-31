@@ -11,6 +11,7 @@ import com.huns.chain.core.*
 import com.huns.common.bean.MemberData
 import com.huns.common.bean.PermissionData
 import com.huns.chain.pbft.PbftConfig
+import com.huns.common.crypto.ECDSA
 import io.vertx.core.eventbus.Message
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.ext.web.client.WebClient
@@ -32,10 +33,11 @@ class FetcherVerticle : CoroutineVerticle() {
     private var managerPort: Int = 0
 
     override suspend fun start() {
+        EnvConfig.nodePublicKey = config.getString("node_public_key")
+        EnvConfig.nodePrivateKey = config.getString("node_private_key")
         tcpPort = config.getInteger("tcp_port")
         managerHost = config.getString("manager_host")
         nodeName = config.getString("node_name")
-        EnvConfig.nodeAppId = config.getString("node_app_id")
         managerPort = config.getInteger("manager_port")
 
         val bus = vertx.eventBus()
@@ -68,13 +70,16 @@ class FetcherVerticle : CoroutineVerticle() {
 
     private fun fetchOtherServers(timerId: Long) {
         launch {
-            logger.info("Fetching other servers: name: $nodeName, appId: ${EnvConfig.nodeAppId}, " +
+            logger.info("Fetching other servers: name: $nodeName, appId: ${EnvConfig.nodePublicKey}, " +
                     "address: ${getAddress(getIp(), tcpPort)}, manager: $managerHost$managerPort")
+            val address = getAddress(getIp(), tcpPort)
+            val sign = ECDSA.sign(EnvConfig.nodePrivateKey, address)
             val response = webClient
                 .get(managerPort, managerHost, "/member")
                 .setQueryParam("name", nodeName)
-                .setQueryParam("appId", EnvConfig.nodeAppId)
+                .setQueryParam("appId", EnvConfig.nodePublicKey)
                 .setQueryParam("address", getAddress(getIp(), tcpPort))
+                .setQueryParam("sign", sign)
                 .send().await().bodyAsJsonObject()
             if (response.getInteger("code") == 0) {
                 val memberData = response.getJsonObject("content").mapTo(MemberData::class.java)

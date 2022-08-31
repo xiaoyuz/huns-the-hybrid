@@ -7,5 +7,8 @@
   "tcp_port": 5000,
 
   "manager_host": "127.0.0.1",
-  "manager_port": 8085
+  "manager_port": 8085,
+
+  "node_public_key": "BLg2VxyZJj2tlfqSadTC1X1R2P31wc750WsWrTBDyuEjH1Tofm/PNruxdLBIG80SJOeUMM3rqRn5IN0g3MwTDYw=",
+  "node_private_key": "mssvlEy8zey1FDnWicIacrZ/gdjGWU/1a5Vd2saKjI4="
 }

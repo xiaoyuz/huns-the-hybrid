@@ -4,9 +4,7 @@ import com.huns.chain.EnvConfig
 import com.huns.common.getIp
 import com.huns.common.handleMessage
 import com.huns.chain.core.*
-import com.huns.common.bean.MemberData
 import com.huns.chain.common.bean.NodeData
-import com.huns.chain.common.manager.NodeKeyPairManager
 import com.huns.chain.p2p.client.P2PClient
 import com.huns.chain.p2p.message.P2PMessage
 import com.huns.chain.p2p.message.PING
@@ -26,13 +24,8 @@ class P2PVerticle : CoroutineVerticle() {
     private lateinit var p2pClient: P2PClient
     private lateinit var p2pServer: P2PServer
 
-    private val nodeKeyPairManager: NodeKeyPairManager by lazy { NodeKeyPairManager(vertx) }
-
     override suspend fun start() {
         EnvConfig.tcpPort = config.getInteger("tcp_port")
-        val nodeKeyPair = nodeKeyPairManager.nodeKeyPair()
-        EnvConfig.nodePublicKey = nodeKeyPair.publicKey
-        EnvConfig.nodePrivateKey = nodeKeyPair.privateKey
 
         p2pClient = P2PClient(vertx)
         p2pServer = P2PServer(vertx)
@@ -51,7 +44,7 @@ class P2PVerticle : CoroutineVerticle() {
         logger.info("Ping other servers")
         val pingMessage = PingMessage(
             nodeData = NodeData(
-                appId = EnvConfig.nodeAppId,
+                appId = EnvConfig.nodePublicKey,
                 ip = getIp(),
                 port = EnvConfig.tcpPort
             )

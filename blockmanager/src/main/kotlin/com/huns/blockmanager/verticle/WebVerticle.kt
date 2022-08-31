@@ -2,9 +2,13 @@ package com.huns.blockmanager.verticle
 
 import com.huns.blockmanager.data.repository.MemberRepository
 import com.huns.blockmanager.data.repository.PermissionRepository
+import com.huns.chain.common.genPairKey
 import com.huns.common.bean.ApiResponse
 import com.huns.common.bean.MemberData
 import com.huns.common.bean.PermissionData
+import com.huns.common.crypto.ECDSA
+import com.huns.common.exception.Errors
+import com.huns.common.exception.KeyException
 import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.Json
 import io.vertx.ext.web.Router
@@ -44,6 +48,7 @@ class WebVerticle : CoroutineVerticle() {
 
         router.get("/member").handler { handleCtx(it) { handleMember(it) } }
         router.get("/permission").handler { handleCtx(it) { handlePermission(it) } }
+        router.get("/node/keypair").handler { handleCtx(it) { handleCreateNodeKeyPair(it) } }
 
         try {
             vertx.createHttpServer().requestHandler(router).listen(httpPort).await()
@@ -51,8 +56,6 @@ class WebVerticle : CoroutineVerticle() {
         } catch (e: Exception) {
             logger.error("Web Server start failed, $e")
         }
-
-
     }
 
     private suspend fun handleMember(ctx: RoutingContext) {
@@ -60,14 +63,19 @@ class WebVerticle : CoroutineVerticle() {
         val name = ctx.queryParam("name").firstOrNull() ?: ""
         val appId = ctx.queryParam("appId").firstOrNull() ?: ""
         val address = ctx.queryParam("address").firstOrNull() ?: ""
-        val members = mMemberRepository.findFirstByAppId(appId)?.let { member ->
-            if (member.name == name && member.address == address) {
-                mMemberRepository.findByName(name).firstOrNull()?.groupId?.let { groupId ->
-                    mMemberRepository.findByGroupId(groupId)
-                }
-            } else emptyList()
-        } ?: emptyList()
-        ctx.response().end(Json.encode(ApiResponse.success(MemberData(members))))
+        val sign = ctx.queryParam("sign").firstOrNull() ?: ""
+        if (!ECDSA.verify(address, sign, appId)) {
+            throw KeyException(Errors.VERIFY_HASH_ERROR)
+        } else {
+            val members = mMemberRepository.findFirstByAppId(appId)?.let { member ->
+                if (member.name == name && member.address == address) {
+                    mMemberRepository.findByName(name).firstOrNull()?.groupId?.let { groupId ->
+                        mMemberRepository.findByGroupId(groupId)
+                    }
+                } else emptyList()
+            } ?: emptyList()
+            ctx.response().end(Json.encode(ApiResponse.success(MemberData(members))))
+        }
     }
 
     private suspend fun handlePermission(ctx: RoutingContext) {
@@ -76,6 +84,11 @@ class WebVerticle : CoroutineVerticle() {
             mPermissionRepository.findByGroupId(groupId)
         } ?: emptyList()
         ctx.response().end(Json.encode(ApiResponse.success(PermissionData(permissions))))
+    }
+
+    private fun handleCreateNodeKeyPair(ctx: RoutingContext) {
+        val keyPair = genPairKey()
+        ctx.response().end(Json.encode(ApiResponse.success(keyPair)))
     }
 
     private fun handleCtx(ctx: RoutingContext, func: suspend (ctx: RoutingContext) -> Unit) {
