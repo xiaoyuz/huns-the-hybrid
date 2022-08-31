@@ -64,26 +64,26 @@ private suspend fun loadFileConfig(vertx: Vertx): JsonObject {
     return retriever.config.await()
 }
 
-private fun deployVerticles(vertx: Vertx, config: JsonObject) {
+private suspend fun deployVerticles(vertx: Vertx, config: JsonObject) {
     vertx.deployVerticle(
         "com.huns.chain.web.WebVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
     vertx.deployVerticle(
         "com.huns.chain.storage.StorageVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
     vertx.deployVerticle(
         "com.huns.chain.block.BlockVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
     vertx.deployVerticle(
         "com.huns.chain.permission.FetcherVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
     vertx.deployVerticle(
         "com.huns.chain.p2p.P2PVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
     vertx.deployVerticle(
         "com.huns.chain.pbft.PbftVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
     vertx.deployVerticle(
         "com.huns.chain.transaction.TransactionVerticle", DeploymentOptions().setConfig(config)
-    )
+    ).await()
 }

@@ -1,10 +1,12 @@
 package com.huns.chain.p2p
 
+import com.huns.chain.EnvConfig
 import com.huns.common.getIp
 import com.huns.common.handleMessage
 import com.huns.chain.core.*
 import com.huns.common.bean.MemberData
 import com.huns.chain.common.bean.NodeData
+import com.huns.chain.common.manager.NodeKeyPairManager
 import com.huns.chain.p2p.client.P2PClient
 import com.huns.chain.p2p.message.P2PMessage
 import com.huns.chain.p2p.message.PING
@@ -24,8 +26,13 @@ class P2PVerticle : CoroutineVerticle() {
     private lateinit var p2pClient: P2PClient
     private lateinit var p2pServer: P2PServer
 
+    private val nodeKeyPairManager: NodeKeyPairManager by lazy { NodeKeyPairManager(vertx) }
+
     override suspend fun start() {
-        com.huns.chain.EnvConfig.tcpPort = config.getInteger("tcp_port")
+        EnvConfig.tcpPort = config.getInteger("tcp_port")
+        val nodeKeyPair = nodeKeyPairManager.nodeKeyPair()
+        EnvConfig.nodePublicKey = nodeKeyPair.publicKey
+        EnvConfig.nodePrivateKey = nodeKeyPair.privateKey
 
         p2pClient = P2PClient(vertx)
         p2pServer = P2PServer(vertx)
@@ -35,6 +42,7 @@ class P2PVerticle : CoroutineVerticle() {
         bus.consumer(P2P_BROADCAST, this::broadcast)
         bus.consumer(P2P_BROADCAST_INCLUDE_SELF, this::broadcastIncludeSelf)
         bus.consumer(P2P_PING, this::ping)
+        bus.consumer(P2P_SEND, this::send)
 
         vertx.setTimer(SCHEDULE_PING_TIME, this::pingAllServers)
     }
@@ -43,9 +51,9 @@ class P2PVerticle : CoroutineVerticle() {
         logger.info("Ping other servers")
         val pingMessage = PingMessage(
             nodeData = NodeData(
-                appId = com.huns.chain.EnvConfig.nodeAppId,
+                appId = EnvConfig.nodeAppId,
                 ip = getIp(),
-                port = com.huns.chain.EnvConfig.tcpPort
+                port = EnvConfig.tcpPort
             )
         )
         p2pClient.broadcast(
@@ -57,7 +65,7 @@ class P2PVerticle : CoroutineVerticle() {
         vertx.setTimer(SCHEDULE_PING_TIME, this::pingAllServers)
     }
 
-    private fun refreshClients(message: Message<MemberData>) {
+    private fun refreshClients(message: Message<Set<NodeData>>) {
         logger.info("Refreshing p2p clients: ${message.body()}")
         handleMessage(message, P2P_CODE_ERROR) {
             p2pClient.refreshClients(it.body())
@@ -69,6 +77,14 @@ class P2PVerticle : CoroutineVerticle() {
         logger.info("Broadcast message: ${message.body()}")
         handleMessage(message, P2P_CODE_ERROR) {
             p2pClient.broadcast(it.body())
+            message.reply("")
+        }
+    }
+
+    private fun send(message: Message<Pair<NodeData, P2PMessage>>) {
+        logger.info("Send message: ${message.body()}")
+        handleMessage(message, P2P_CODE_ERROR) {
+            p2pClient.send(it.body().first, it.body().second)
             message.reply("")
         }
     }

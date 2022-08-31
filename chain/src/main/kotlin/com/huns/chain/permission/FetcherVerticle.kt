@@ -1,6 +1,8 @@
 package com.huns.chain.permission
 
+import com.huns.chain.EnvConfig
 import com.huns.chain.block.model.Block
+import com.huns.chain.common.bean.NodeData
 import com.huns.common.model.Transaction
 import com.huns.common.getAddress
 import com.huns.common.getIp
@@ -33,7 +35,7 @@ class FetcherVerticle : CoroutineVerticle() {
         tcpPort = config.getInteger("tcp_port")
         managerHost = config.getString("manager_host")
         nodeName = config.getString("node_name")
-        com.huns.chain.EnvConfig.nodeAppId = config.getString("node_app_id")
+        EnvConfig.nodeAppId = config.getString("node_app_id")
         managerPort = config.getInteger("manager_port")
 
         val bus = vertx.eventBus()
@@ -66,21 +68,28 @@ class FetcherVerticle : CoroutineVerticle() {
 
     private fun fetchOtherServers(timerId: Long) {
         launch {
-            logger.info("Fetching other servers: name: $nodeName, appId: ${com.huns.chain.EnvConfig.nodeAppId}, " +
+            logger.info("Fetching other servers: name: $nodeName, appId: ${EnvConfig.nodeAppId}, " +
                     "address: ${getAddress(getIp(), tcpPort)}, manager: $managerHost$managerPort")
             val response = webClient
                 .get(managerPort, managerHost, "/member")
                 .setQueryParam("name", nodeName)
-                .setQueryParam("appId", com.huns.chain.EnvConfig.nodeAppId)
+                .setQueryParam("appId", EnvConfig.nodeAppId)
                 .setQueryParam("address", getAddress(getIp(), tcpPort))
                 .send().await().bodyAsJsonObject()
             if (response.getInteger("code") == 0) {
                 val memberData = response.getJsonObject("content").mapTo(MemberData::class.java)
                 logger.info("${memberData.members.size} needs connections: $memberData")
-                PbftConfig.pbftSize = ((memberData.members.size - 1) / 3).let { if (it > 0) it else 1 }
-                PbftConfig.pbftApproveCount = PbftConfig.pbftSize * 2 + 1
-                // connect nodes in P2P
-                vertx.eventBus().request<String>(P2P_CONNECT_NODES, memberData).await()
+                if (memberData.members.isNotEmpty()) {
+                    PbftConfig.pbftSize = ((memberData.members.size - 1) / 3).let { if (it > 0) it else 1 }
+                    PbftConfig.pbftApproveCount = PbftConfig.pbftSize * 2 + 1
+                    // connect nodes in P2P
+                    val nodeDatas = memberData.members.map {
+                        val (remoteIp, remotePort) = it.ipAndPort()
+                        NodeData(appId = it.appId, ip = remoteIp, port = remotePort)
+                    }.toSet()
+                    PermissionHelper.saveValidRemoteIp(nodeDatas.map { it.ip }.toSet())
+                    vertx.eventBus().request<String>(P2P_CONNECT_NODES, nodeDatas).await()
+                }
             }
         }
         vertx.setTimer(SCHEDULE_FETCH_SERVERS_TIME, this::fetchOtherServers)

@@ -7,6 +7,8 @@ const val KEY_BLOCK_PREFIX = "key_block_"
 
 const val KEY_TRANSACTION_BLOCK_PREFIX = "key_transaction_block_"
 
+const val KEY_NODE_KEYPAIR = "key_node_keypair"
+
 const val PERMISSION_TYPE_OWNER: Byte = 1
 const val PERMISSION_TYPE_ALL: Byte = 2
 const val PERMISSION_TYPE_ADD: Byte = 3

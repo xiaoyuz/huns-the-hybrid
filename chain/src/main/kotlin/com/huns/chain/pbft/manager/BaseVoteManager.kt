@@ -1,5 +1,6 @@
 package com.huns.chain.pbft.manager
 
+import com.huns.chain.EnvConfig
 import com.huns.chain.block.model.Block
 import com.huns.chain.p2p.broadcastP2PMessage
 import com.huns.chain.p2p.message.PBFT_VOTE
@@ -19,7 +20,7 @@ abstract class BaseVoteManager(
 
     suspend fun broadcastVote(voteData: VoteData) {
         val newVoteMsg = voteData.copy(
-            appId = com.huns.chain.EnvConfig.nodeAppId
+            appId = EnvConfig.nodeAppId
         )
         broadcastP2PMessage(vertx, PBFT_VOTE, VoteMessage(voteData = newVoteMsg))
     }

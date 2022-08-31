@@ -1,5 +1,6 @@
 package com.huns.chain.p2p.server.handler
 
+import com.huns.chain.EnvConfig
 import com.huns.chain.common.manager.BlockManager
 import com.huns.chain.core.PBFT_PUSH_VOTE
 import com.huns.chain.p2p.message.BlockMessage
@@ -23,7 +24,7 @@ class GenBlockReqHandler(vertx: Vertx) : BaseHandler<BlockMessage>(vertx) {
             block = block,
             voteType = VOTE_PREPREPARE,
             number = block.blockHeader.number,
-            appId = com.huns.chain.EnvConfig.nodeAppId,
+            appId = EnvConfig.nodeAppId,
             hash = block.hash,
             agree = true
         )

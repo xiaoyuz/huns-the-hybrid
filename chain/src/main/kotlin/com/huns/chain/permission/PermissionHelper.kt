@@ -9,8 +9,11 @@ import com.huns.common.bean.Permission
 object PermissionHelper {
 
     private val permissionMap = mutableMapOf<String, MutableList<Permission>>()
+    private val validRemoteIps = mutableSetOf<String>()
 
     fun checkPermission(block: Block) = checkPermission(block.blockBody.transactions)
+
+    fun checkRemoteIp(ip: String) = validRemoteIps.contains(ip)
 
     fun checkPermission(transactions: List<Transaction>): Boolean {
         transactions.forEach {
@@ -32,6 +35,11 @@ object PermissionHelper {
             if (!permissionMap.containsKey(key)) permissionMap[key] = mutableListOf()
             permissionMap[key]?.add(it)
         }
+    }
+
+    fun saveValidRemoteIp(addresses: Set<String>) {
+        validRemoteIps.clear()
+        validRemoteIps.addAll(addresses)
     }
 
     private fun checkOperation(publicKey: String, tableName: String, operation: Byte) =

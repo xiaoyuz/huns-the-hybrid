@@ -1,13 +1,19 @@
 package com.huns.chain.p2p.client
 
+import com.huns.chain.EnvConfig
 import com.huns.common.getAddress
 import com.huns.common.getIp
 import com.huns.common.bean.MemberData
 import com.huns.chain.common.bean.NodeData
 import com.huns.chain.p2p.message.*
 import com.huns.chain.p2p.packet.P2PPacket
+import com.huns.chain.p2p.packet.writer.BasicPacketWriter
+import com.huns.chain.p2p.packet.writer.MessagePacketWriter
+import com.huns.chain.p2p.packet.writer.PacketWriter
+import com.huns.chain.p2p.packet.writer.SignPacketWriter
 import io.vertx.core.Vertx
 import io.vertx.core.impl.logging.LoggerFactory
+import io.vertx.core.json.Json
 import io.vertx.core.net.NetClient
 import io.vertx.core.net.NetClientOptions
 import io.vertx.core.net.NetSocket
@@ -23,6 +29,7 @@ class P2PClient(
     private val logger = LoggerFactory.getLogger(P2PClient::class.java)
 
     private val netClient: NetClient
+    private val packetWriter: PacketWriter by lazy { MessagePacketWriter(SignPacketWriter(BasicPacketWriter())) }
 
     init {
         val netClientOptions = NetClientOptions().apply {
@@ -52,11 +59,7 @@ class P2PClient(
         }
     }
 
-    suspend fun refreshClients(memberData: MemberData) {
-        val nodeDatas = memberData.members.map {
-            val (remoteIp, remotePort) = it.ipAndPort()
-            NodeData(appId = it.appId, ip = remoteIp, port = remotePort)
-        }.toSet()
+    suspend fun refreshClients(nodeDatas: Set<NodeData>) {
         val currentNodeDatas = connectedSockets.keys
         val needRemoved = currentNodeDatas.minus(nodeDatas)
         val needAdded = nodeDatas.minus(currentNodeDatas)
@@ -70,11 +73,21 @@ class P2PClient(
     }
 
     fun broadcast(p2PMessage: P2PMessage, includeSelf: Boolean = false) {
-        val localAddress = getAddress(getIp(), com.huns.chain.EnvConfig.tcpPort)
-        connectedSockets.values.forEach {
-            if (includeSelf || it.remoteAddress().toString() != localAddress) {
-                it.write(P2PPacket(p2PMessage).content)
+        val localAddress = getAddress(getIp(), EnvConfig.tcpPort)
+        connectedSockets.values.forEach { netSocket ->
+            if (includeSelf || netSocket.remoteAddress().toString() != localAddress) {
+                val json = Json.encode(p2PMessage)
+                packetWriter.process(json)?.let {
+                    netSocket.write(it)
+                }
             }
+        }
+    }
+
+    fun send(nodeData: NodeData, p2PMessage: P2PMessage) {
+        val json = Json.encode(p2PMessage)
+        packetWriter.process(json)?.let {
+            connectedSockets[nodeData]?.write(it)
         }
     }
 }

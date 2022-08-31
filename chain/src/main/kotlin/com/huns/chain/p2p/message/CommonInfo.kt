@@ -1,5 +1,6 @@
 package com.huns.chain.p2p.message
 
+import com.huns.chain.EnvConfig
 import com.huns.chain.common.bean.NodeData
 import com.huns.common.UUID
 import com.huns.common.getIp
@@ -9,8 +10,8 @@ data class CommonInfo(
     var requestId: String = UUID(),
     var responseId: String = "",
     var nodeData: NodeData = NodeData(
-        appId = com.huns.chain.EnvConfig.nodeAppId,
+        appId = EnvConfig.nodeAppId,
         ip = getIp(),
-        port = com.huns.chain.EnvConfig.tcpPort
+        port = EnvConfig.tcpPort
     )
 ) : java.io.Serializable

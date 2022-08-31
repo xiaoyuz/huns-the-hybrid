@@ -1,9 +1,14 @@
 package com.huns.chain.p2p.server
 
+import com.huns.chain.EnvConfig
 import com.huns.chain.p2p.server.handler.BaseHandler
 import com.huns.chain.p2p.message.*
-import com.huns.chain.p2p.packet.PacketHelper
+import com.huns.chain.p2p.packet.reader.BasicPacketReader
+import com.huns.chain.p2p.packet.reader.MessagePacketReader
+import com.huns.chain.p2p.packet.reader.PacketReader
+import com.huns.chain.p2p.packet.reader.SignPacketReader
 import com.huns.chain.p2p.server.handler.*
+import com.huns.chain.permission.PermissionHelper
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.impl.logging.LoggerFactory
@@ -21,7 +26,7 @@ class P2PServer(
 ) {
     private val logger = LoggerFactory.getLogger(P2PServer::class.java)
 
-    private val packetHelper = PacketHelper()
+    private val packetReader: PacketReader by lazy { BasicPacketReader(SignPacketReader(MessagePacketReader())) }
     private val handlerMap: Map<Byte, BaseHandler<*>> = mapOf(
         PING to PingRequestHandler(vertx),
         GEN_BLOCK_COMPLETE_REQ to GenCompleteReqHandler(vertx),
@@ -44,7 +49,7 @@ class P2PServer(
         vertx
             .createNetServer(netServerOptions)
             .connectHandler(this::handleServerConnect)
-            .listen(com.huns.chain.EnvConfig.tcpPort)
+            .listen(EnvConfig.tcpPort)
     }
 
     private fun handleServerConnect(socket: NetSocket) {
@@ -59,12 +64,19 @@ class P2PServer(
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun handleBuffer(socket: NetSocket, buffer: Buffer) {
-        packetHelper.handleBuffer(buffer) {
+        if (!PermissionHelper.checkRemoteIp(socket.remoteAddress().hostAddress())) return
+        packetReader.successorProcess(buffer.toString())?.let {
             GlobalScope.launch(vertx.dispatcher()) {
-                val p2pMessage = it.genP2PMessage()
-                handlerMap[p2pMessage.type]?.execute(p2pMessage, socket)
+                handlerMap[it.type]?.execute(it, socket)
             }
         }
+
+//        packetHelper.handleBuffer(buffer) {
+//            GlobalScope.launch(vertx.dispatcher()) {
+//                val p2pMessage = it.genP2PMessage()
+//                handlerMap[p2pMessage.type]?.execute(p2pMessage, socket)
+//            }
+//        }
     }
 
     private fun handleException(socket: NetSocket, t: Throwable) {
