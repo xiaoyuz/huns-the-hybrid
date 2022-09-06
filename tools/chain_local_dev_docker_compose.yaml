@@ -66,7 +66,7 @@ services:
       NODE_NAME: node3
       NODE_APP_ID: node3app
       MANAGER_HOST: 10.7.10.151
-      NODE_PUBLIC_KEY: "BMfTIw7JVuNE1gurrCHhcGtliq722wldZxCmI4ic8Lgd/CpdVvNaUpohyD0nhbH/4FBumSPeEoXHf/sSanxWXZw"
+      NODE_PUBLIC_KEY: "BMfTIw7JVuNE1gurrCHhcGtliq722wldZxCmI4ic8Lgd/CpdVvNaUpohyD0nhbH/4FBumSPeEoXHf/sSanxWXZw="
       NODE_PRIVATE_KEY: "vLg58fQugEXZl3aoRItR0Llkyf8Egb309TLSRZZUGeU="
     networks:
       bcn:
@@ -76,6 +76,25 @@ services:
       - '5003:5000'
     volumes:
       - "/tmp/huns-chain-3-logs:/app/logs"
+
+  huns-chain-node4:
+    image: 'huns-chain:latest'
+    container_name: huns-chain-node4
+    restart: always
+    environment:
+      NODE_NAME: node4
+      NODE_APP_ID: node4app
+      MANAGER_HOST: 10.7.10.151
+      NODE_PUBLIC_KEY: "BFJTBfOKKHftw7jnU+0c45tDgrCBhCyiFJoi/zv54NSIpoxVxAGaCAaa1wqz9NjIFdYRmnSJen/VYvwr26CyTOY="
+      NODE_PRIVATE_KEY: "EJsZq95NXMi8MD5MTkJ3CV0EbCBB/BYih+5YphlAoxs="
+    networks:
+      bcn:
+        ipv4_address: 192.170.0.6
+    ports:
+      - '38084:38080'
+      - '5004:5000'
+    volumes:
+      - "/tmp/huns-chain-4-logs:/app/logs"
 
 networks:
   bcn:

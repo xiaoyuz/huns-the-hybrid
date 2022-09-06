@@ -113,7 +113,7 @@ class BlockManager(private val vertx: Vertx) {
         if (hash != block.hash) throw KeyException(Errors.VERIFY_HASH_ERROR)
     }
 
-    private suspend fun checkMerkle(block: Block) {
+    private fun checkMerkle(block: Block) {
         val hashes = block.blockBody.transactions.map { it.hash }
         val merkleRoot = block.blockHeader.merkleRootHash
         val merkleTree = MerkleTree(hashes)
