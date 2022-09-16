@@ -15,7 +15,7 @@ class SignPacketWriter(
         if (privateKey.isEmpty()) return null
         val sign = ECDSA.sign(privateKey, data)
         val packetContent = PacketContent(
-            publicKey = EnvConfig.nodePublicKey,
+            publicKey = EnvConfig.nodeAppId,
             sign = sign,
             data = data
         )

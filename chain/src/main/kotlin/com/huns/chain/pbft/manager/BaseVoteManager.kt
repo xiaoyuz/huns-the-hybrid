@@ -20,7 +20,7 @@ abstract class BaseVoteManager(
 
     suspend fun broadcastVote(voteData: VoteData) {
         val newVoteMsg = voteData.copy(
-            appId = EnvConfig.nodePublicKey
+            appId = EnvConfig.nodeAppId
         )
         broadcastP2PMessage(vertx, PBFT_VOTE, VoteMessage(voteData = newVoteMsg))
     }

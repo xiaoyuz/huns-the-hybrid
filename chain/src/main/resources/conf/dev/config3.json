@@ -2,13 +2,12 @@
   "http_port": 38083,
   "level_path": "/home/zhangxiaoyu/levelDB3",
   "node_name": "node3",
-  "node_app_id": "node3app",
 
   "tcp_port": 5003,
 
   "manager_host": "localhost",
   "manager_port": 8085,
 
-  "node_public_key": "BMfTIw7JVuNE1gurrCHhcGtliq722wldZxCmI4ic8Lgd/CpdVvNaUpohyD0nhbH/4FBumSPeEoXHf/sSanxWXZw=",
+  "node_app_id": "BMfTIw7JVuNE1gurrCHhcGtliq722wldZxCmI4ic8Lgd/CpdVvNaUpohyD0nhbH/4FBumSPeEoXHf/sSanxWXZw=",
   "node_private_key": "vLg58fQugEXZl3aoRItR0Llkyf8Egb309TLSRZZUGeU="
 }

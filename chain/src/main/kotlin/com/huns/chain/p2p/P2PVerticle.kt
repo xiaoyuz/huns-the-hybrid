@@ -44,7 +44,7 @@ class P2PVerticle : CoroutineVerticle() {
         logger.info("Ping other servers")
         val pingMessage = PingMessage(
             nodeData = NodeData(
-                appId = EnvConfig.nodePublicKey,
+                appId = EnvConfig.nodeAppId,
                 ip = getIp(),
                 port = EnvConfig.tcpPort
             )

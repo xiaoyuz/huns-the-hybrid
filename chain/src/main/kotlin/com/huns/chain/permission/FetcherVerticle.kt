@@ -33,7 +33,7 @@ class FetcherVerticle : CoroutineVerticle() {
     private var managerPort: Int = 0
 
     override suspend fun start() {
-        EnvConfig.nodePublicKey = config.getString("node_public_key")
+        EnvConfig.nodeAppId = config.getString("node_app_id")
         EnvConfig.nodePrivateKey = config.getString("node_private_key")
         tcpPort = config.getInteger("tcp_port")
         managerHost = config.getString("manager_host")
@@ -70,14 +70,14 @@ class FetcherVerticle : CoroutineVerticle() {
 
     private fun fetchOtherServers(timerId: Long) {
         launch {
-            logger.info("Fetching other servers: name: $nodeName, appId: ${EnvConfig.nodePublicKey}, " +
+            logger.info("Fetching other servers: name: $nodeName, appId: ${EnvConfig.nodeAppId}, " +
                     "address: ${getAddress(getIp(), tcpPort)}, manager: $managerHost$managerPort")
             val address = getAddress(getIp(), tcpPort)
             val sign = ECDSA.sign(EnvConfig.nodePrivateKey, address)
             val response = webClient
                 .get(managerPort, managerHost, "/member")
                 .setQueryParam("name", nodeName)
-                .setQueryParam("appId", EnvConfig.nodePublicKey)
+                .setQueryParam("appId", EnvConfig.nodeAppId)
                 .setQueryParam("address", getAddress(getIp(), tcpPort))
                 .setQueryParam("sign", sign)
                 .send().await().bodyAsJsonObject()
