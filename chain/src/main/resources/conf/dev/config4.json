@@ -1,6 +1,7 @@
 {
   "http_port": 38084,
   "level_path": "/home/zhangxiaoyu/levelDB4",
+  "sqlite_path": "/home/zhangxiaoyu/sqlite4",
   "node_name": "node4",
 
   "tcp_port": 5004,

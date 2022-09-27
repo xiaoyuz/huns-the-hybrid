@@ -1,6 +1,7 @@
 {
   "http_port": 38080,
   "level_path": "/app/levelDB",
+  "sqlite_path": "/app/sqlite",
   "node_name": "node0",
 
   "tcp_port": 5000,

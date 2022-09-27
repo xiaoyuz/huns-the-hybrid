@@ -3,3 +3,4 @@
 4. 部分信息加密
 
 5. 节点需要在manager上注册得到公私钥，fetch node list请求时需要签名，manager会检查appid是否存在并校验签名，通过才返回list
+6. 将json执行命令同步到sqlite

@@ -22,6 +22,8 @@ const val P2P_BROADCAST_INCLUDE_SELF = "p2p.broadcast.include.self"
 const val P2P_PING = "p2p.ping"
 const val P2P_SEND = "p2p.send"
 
+const val DB_SYNC = "db.sync"
+
 const val PBFT_PUSH_VOTE = "pbft.push.vote"
 const val PBFT_PUSH_CACHE = "pbft.push.cache"
 const val PBFT_POP_CACHE = "pbft.pop.cache"
